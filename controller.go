@@ -2,27 +2,28 @@ package main
 
 import (
 	"fmt"
+	"time"
 
+	"github.com/golang/glog"
+
+	"k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/util/runtime"
+	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/kubernetes/scheme"
+	"k8s.io/client-go/scale"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/record"
 	"k8s.io/client-go/util/workqueue"
 
-	"time"
+	corev1 "k8s.io/api/core/v1"
+	typedcorev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 
 	appsv1alpha1 "github.com/cstoku/scheduling-scaler/pkg/apis/apps/v1alpha1"
 	clientset "github.com/cstoku/scheduling-scaler/pkg/client/clientset/versioned"
 	appsscheme "github.com/cstoku/scheduling-scaler/pkg/client/clientset/versioned/scheme"
 	informers "github.com/cstoku/scheduling-scaler/pkg/client/informers/externalversions/apps/v1alpha1"
 	listers "github.com/cstoku/scheduling-scaler/pkg/client/listers/apps/v1alpha1"
-	"github.com/golang/glog"
-	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/util/runtime"
-	"k8s.io/apimachinery/pkg/util/wait"
-	"k8s.io/client-go/kubernetes/scheme"
-	typedcorev1 "k8s.io/client-go/kubernetes/typed/core/v1"
-	"k8s.io/client-go/scale"
 )
 
 const controllerAgentName = "scheduling-scaler-controller"
