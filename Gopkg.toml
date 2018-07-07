@@ -24,6 +24,11 @@
 #   go-tests = true
 #   unused-packages = true
 
+required = ["k8s.io/code-generator/cmd/client-gen"]
+
+[[constraint]]
+  name = "k8s.io/code-generator"
+  branch = "master"
 
 [prune]
   go-tests = true
