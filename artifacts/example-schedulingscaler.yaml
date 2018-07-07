@@ -1,0 +1,6 @@
+apiVersion: apps.k8s.cstoku.me/v1alpha1
+kind: SchedulingScaler
+metadata:
+  name: example-scheduling-scaler
+spec:
+  name: hoge

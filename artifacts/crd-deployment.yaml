@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scheduling-scaler
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      app: scheduling-scaler
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: scheduling-scaler
+    spec:
+      containers:
+        - name: scheduling-scaler
+          image: cstoku/scheduling-scaler:latest
+          imagePullPolicy: Always
