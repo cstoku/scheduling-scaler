@@ -7,11 +7,11 @@ import (
 	"k8s.io/client-go/util/workqueue"
 
 	appsinformers "k8s.io/client-go/informers/apps/v1"
-	scscv1alpha "github.com/cstoku/scheduling-scaler/pkg/apis/scsc/v1alpha"
+	scscv1alpha1 "github.com/cstoku/scheduling-scaler/pkg/apis/scsc/v1alpha1"
 	scscscheme "github.com/cstoku/scheduling-scaler/pkg/client/clientset/versioned/scheme"
 	clientset "github.com/cstoku/scheduling-scaler/pkg/client/clientset/versioned"
-	listers "github.com/cstoku/scheduling-scaler/pkg/client/listers/scsc/v1alpha"
-	informers "github.com/cstoku/scheduling-scaler/pkg/client/informers/externalversions/scsc/v1alpha"
+	listers "github.com/cstoku/scheduling-scaler/pkg/client/listers/scsc/v1alpha1"
+	informers "github.com/cstoku/scheduling-scaler/pkg/client/informers/externalversions/scsc/v1alpha1"
 	"github.com/golang/glog"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes/scheme"
@@ -166,10 +166,10 @@ func (c *Controller) syncHandler(key string) error {
 	return nil
 }
 
-func (c *Controller) updateWorkflowStatus(wf *scscv1alpha.SchedulingScaler) error {
+func (c *Controller) updateWorkflowStatus(wf *scscv1alpha1.SchedulingScaler) error {
 	wfCopy := wf.DeepCopy()
 	wfCopy.Status.Name = wf.Spec.Name
-	_, err := c.scscClientset.SchedulingV1alpha().SchedulingScalers(wf.Namespace).Update(wfCopy)
+	_, err := c.scscClientset.SchedulingV1alpha1().SchedulingScalers(wf.Namespace).Update(wfCopy)
 	return err
 }
 

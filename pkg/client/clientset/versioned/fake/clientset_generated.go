@@ -20,8 +20,8 @@ package fake
 
 import (
 	clientset "github.com/cstoku/scheduling-scaler/pkg/client/clientset/versioned"
-	schedulingv1alpha "github.com/cstoku/scheduling-scaler/pkg/client/clientset/versioned/typed/scsc/v1alpha"
-	fakeschedulingv1alpha "github.com/cstoku/scheduling-scaler/pkg/client/clientset/versioned/typed/scsc/v1alpha/fake"
+	schedulingv1alpha1 "github.com/cstoku/scheduling-scaler/pkg/client/clientset/versioned/typed/scsc/v1alpha1"
+	fakeschedulingv1alpha1 "github.com/cstoku/scheduling-scaler/pkg/client/clientset/versioned/typed/scsc/v1alpha1/fake"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/discovery"
@@ -71,12 +71,12 @@ func (c *Clientset) Discovery() discovery.DiscoveryInterface {
 
 var _ clientset.Interface = &Clientset{}
 
-// SchedulingV1alpha retrieves the SchedulingV1alphaClient
-func (c *Clientset) SchedulingV1alpha() schedulingv1alpha.SchedulingV1alphaInterface {
-	return &fakeschedulingv1alpha.FakeSchedulingV1alpha{Fake: &c.Fake}
+// SchedulingV1alpha1 retrieves the SchedulingV1alpha1Client
+func (c *Clientset) SchedulingV1alpha1() schedulingv1alpha1.SchedulingV1alpha1Interface {
+	return &fakeschedulingv1alpha1.FakeSchedulingV1alpha1{Fake: &c.Fake}
 }
 
-// Scheduling retrieves the SchedulingV1alphaClient
-func (c *Clientset) Scheduling() schedulingv1alpha.SchedulingV1alphaInterface {
-	return &fakeschedulingv1alpha.FakeSchedulingV1alpha{Fake: &c.Fake}
+// Scheduling retrieves the SchedulingV1alpha1Client
+func (c *Clientset) Scheduling() schedulingv1alpha1.SchedulingV1alpha1Interface {
+	return &fakeschedulingv1alpha1.FakeSchedulingV1alpha1{Fake: &c.Fake}
 }

@@ -19,7 +19,7 @@ limitations under the License.
 package v1alpha
 
 import (
-	v1alpha "github.com/cstoku/scheduling-scaler/pkg/apis/scsc/v1alpha"
+	v1alpha "github.com/cstoku/scheduling-scaler/pkg/apis/scsc/v1alpha1"
 	scheme "github.com/cstoku/scheduling-scaler/pkg/client/clientset/versioned/scheme"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"

@@ -44,7 +44,7 @@ func main() {
 
 	controller := NewController(kubeClient, scscClient,
 		kubeInformerFactory.Apps().V1().Deployments(),
-		scscInformerFactory.Scheduling().V1alpha().SchedulingScalers())
+		scscInformerFactory.Scheduling().V1alpha1().SchedulingScalers())
 
 	go kubeInformerFactory.Start(stopCh)
 	go scscInformerFactory.Start(stopCh)

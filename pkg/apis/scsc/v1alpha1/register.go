@@ -1,4 +1,4 @@
-package v1alpha
+package v1alpha1
 
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -7,7 +7,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
-var SchemeGroupVersion = schema.GroupVersion{Group: scsc.GroupName, Version: "v1alpha"}
+var SchemeGroupVersion = schema.GroupVersion{Group: scsc.GroupName, Version: "v1alpha1"}
 
 func Kind(kind string) schema.GroupKind {
 	return SchemeGroupVersion.WithKind(kind).GroupKind()
