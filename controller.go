@@ -1,27 +1,30 @@
 package main
 
 import (
+	"fmt"
+
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/record"
 	"k8s.io/client-go/util/workqueue"
 
-	appsinformers "k8s.io/client-go/informers/apps/v1"
-	scscv1alpha1 "github.com/cstoku/scheduling-scaler/pkg/apis/scsc/v1alpha1"
-	scscscheme "github.com/cstoku/scheduling-scaler/pkg/client/clientset/versioned/scheme"
+	"time"
+
+	scscv1alpha1 "github.com/cstoku/scheduling-scaler/pkg/apis/apps/v1alpha1"
 	clientset "github.com/cstoku/scheduling-scaler/pkg/client/clientset/versioned"
-	listers "github.com/cstoku/scheduling-scaler/pkg/client/listers/scsc/v1alpha1"
-	informers "github.com/cstoku/scheduling-scaler/pkg/client/informers/externalversions/scsc/v1alpha1"
+	scscscheme "github.com/cstoku/scheduling-scaler/pkg/client/clientset/versioned/scheme"
+	informers "github.com/cstoku/scheduling-scaler/pkg/client/informers/externalversions/apps/v1alpha1"
+	listers "github.com/cstoku/scheduling-scaler/pkg/client/listers/apps/v1alpha1"
 	"github.com/golang/glog"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/util/runtime"
+	"k8s.io/apimachinery/pkg/util/wait"
+	appsinformers "k8s.io/client-go/informers/apps/v1"
 	"k8s.io/client-go/kubernetes/scheme"
 	typedcorev1 "k8s.io/client-go/kubernetes/typed/core/v1"
-	"fmt"
-	"k8s.io/apimachinery/pkg/util/wait"
-	"time"
-	"k8s.io/apimachinery/pkg/util/runtime"
-	"k8s.io/apimachinery/pkg/api/errors"
 )
+
 const controllerAgentName = "scheduling-scaler-controller"
 
 const (
@@ -31,14 +34,14 @@ const (
 )
 
 type Controller struct {
-	kubeclientset     kubernetes.Interface
+	kubeclientset kubernetes.Interface
 	scscClientset clientset.Interface
 
 	scscLister listers.SchedulingScalerLister
 	scscSynced cache.InformerSynced
 
 	workqueue workqueue.RateLimitingInterface
-	recorder record.EventRecorder
+	recorder  record.EventRecorder
 }
 
 func NewController(
@@ -56,12 +59,12 @@ func NewController(
 	recorder := eventBroadcaster.NewRecorder(scheme.Scheme, corev1.EventSource{Component: controllerAgentName})
 
 	controller := &Controller{
-		kubeclientset:     kubeclientset,
+		kubeclientset: kubeclientset,
 		scscClientset: scscClientset,
 		scscLister:    scscInformer.Lister(),
 		scscSynced:    scscInformer.Informer().HasSynced,
-		workqueue:         workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "scscs"),
-		recorder:          recorder,
+		workqueue:     workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "scscs"),
+		recorder:      recorder,
 	}
 
 	glog.Info("Setting up event handlers")
@@ -169,7 +172,7 @@ func (c *Controller) syncHandler(key string) error {
 func (c *Controller) updateWorkflowStatus(wf *scscv1alpha1.SchedulingScaler) error {
 	wfCopy := wf.DeepCopy()
 	wfCopy.Status.Name = wf.Spec.Name
-	_, err := c.scscClientset.SchedulingV1alpha1().SchedulingScalers(wf.Namespace).Update(wfCopy)
+	_, err := c.scscClientset.AppsV1alpha1().SchedulingScalers(wf.Namespace).Update(wfCopy)
 	return err
 }
 

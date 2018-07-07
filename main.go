@@ -2,15 +2,15 @@ package main
 
 import (
 	"flag"
+	"github.com/cstoku/scheduling-scaler/pkg/signals"
 	"github.com/golang/glog"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 	"time"
-	"github.com/cstoku/scheduling-scaler/pkg/signals"
 
-	kubeinformers "k8s.io/client-go/informers"
 	clientset "github.com/cstoku/scheduling-scaler/pkg/client/clientset/versioned"
 	informers "github.com/cstoku/scheduling-scaler/pkg/client/informers/externalversions"
+	kubeinformers "k8s.io/client-go/informers"
 )
 
 var (
@@ -44,7 +44,7 @@ func main() {
 
 	controller := NewController(kubeClient, scscClient,
 		kubeInformerFactory.Apps().V1().Deployments(),
-		scscInformerFactory.Scheduling().V1alpha1().SchedulingScalers())
+		scscInformerFactory.Apps().V1alpha1().SchedulingScalers())
 
 	go kubeInformerFactory.Start(stopCh)
 	go scscInformerFactory.Start(stopCh)

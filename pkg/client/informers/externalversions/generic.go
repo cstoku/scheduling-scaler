@@ -21,7 +21,7 @@ package externalversions
 import (
 	"fmt"
 
-	v1alpha1 "github.com/cstoku/scheduling-scaler/pkg/apis/scsc/v1alpha1"
+	v1alpha1 "github.com/cstoku/scheduling-scaler/pkg/apis/apps/v1alpha1"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	cache "k8s.io/client-go/tools/cache"
 )
@@ -52,9 +52,9 @@ func (f *genericInformer) Lister() cache.GenericLister {
 // TODO extend this to unknown resources with a client pool
 func (f *sharedInformerFactory) ForResource(resource schema.GroupVersionResource) (GenericInformer, error) {
 	switch resource {
-	// Group=scheduling.scaler.cstoku.me, Version=v1alpha1
+	// Group=apps.k8s.cstoku.me, Version=v1alpha1
 	case v1alpha1.SchemeGroupVersion.WithResource("schedulingscalers"):
-		return &genericInformer{resource: resource.GroupResource(), informer: f.Scheduling().V1alpha1().SchedulingScalers().Informer()}, nil
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Apps().V1alpha1().SchedulingScalers().Informer()}, nil
 
 	}
 
