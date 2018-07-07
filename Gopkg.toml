@@ -40,4 +40,3 @@ required = ["k8s.io/code-generator/cmd/client-gen"]
 
 [prune]
   go-tests = true
-  unused-packages = true
