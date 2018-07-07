@@ -2,15 +2,21 @@ package main
 
 import (
 	"flag"
+	"time"
+
 	"github.com/cstoku/scheduling-scaler/pkg/signals"
 	"github.com/golang/glog"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
-	"time"
 
+	"github.com/cstoku/scheduling-scaler/pkg/apis/apps"
 	clientset "github.com/cstoku/scheduling-scaler/pkg/client/clientset/versioned"
 	informers "github.com/cstoku/scheduling-scaler/pkg/client/informers/externalversions"
+	"k8s.io/client-go/discovery"
+	"k8s.io/client-go/dynamic"
 	kubeinformers "k8s.io/client-go/informers"
+	"k8s.io/client-go/restmapper"
+	"k8s.io/client-go/scale"
 )
 
 var (
@@ -34,20 +40,35 @@ func main() {
 		glog.Fatalf("Error building kubernetes clientset: %s", err.Error())
 	}
 
-	scscClient, err := clientset.NewForConfig(cfg)
+	appsClient, err := clientset.NewForConfig(cfg)
 	if err != nil {
-		glog.Fatalf("Error building example clientset: %s", err.Error())
+		glog.Fatalf("Error building %s clientset: %s", apps.GroupName, err.Error())
+	}
+
+	discoveryClient, err := discovery.NewDiscoveryClientForConfig(cfg)
+	if err != nil {
+		glog.Fatalf("Error building discovery client: %s", err.Error())
+	}
+
+	resolver := scale.NewDiscoveryScaleKindResolver(discoveryClient)
+	ar, err := restmapper.GetAPIGroupResources(discoveryClient)
+	if err != nil {
+		glog.Fatalf("Error get apigroup resources: %s", err.Error())
+	}
+	mapper := restmapper.NewDiscoveryRESTMapper(ar)
+	scaleNamespacer, err := scale.NewForConfig(cfg, mapper, dynamic.LegacyAPIPathResolverFunc, resolver)
+	if err != nil {
+		glog.Fatalf("Error binding scale client: %s", err.Error())
 	}
 
 	kubeInformerFactory := kubeinformers.NewSharedInformerFactory(kubeClient, time.Second*30)
-	scscInformerFactory := informers.NewSharedInformerFactory(scscClient, time.Second*30)
+	appsInformerFactory := informers.NewSharedInformerFactory(appsClient, time.Second*30)
 
-	controller := NewController(kubeClient, scscClient,
-		kubeInformerFactory.Apps().V1().Deployments(),
-		scscInformerFactory.Apps().V1alpha1().SchedulingScalers())
+	controller := NewController(kubeClient, appsClient, scaleNamespacer,
+		appsInformerFactory.Apps().V1alpha1().SchedulingScalers())
 
 	go kubeInformerFactory.Start(stopCh)
-	go scscInformerFactory.Start(stopCh)
+	go appsInformerFactory.Start(stopCh)
 
 	if err = controller.Run(2, stopCh); err != nil {
 		glog.Fatalf("Error running controller: %s", err.Error())

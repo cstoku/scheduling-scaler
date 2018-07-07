@@ -10,9 +10,9 @@ import (
 
 	"time"
 
-	scscv1alpha1 "github.com/cstoku/scheduling-scaler/pkg/apis/apps/v1alpha1"
+	appsv1alpha1 "github.com/cstoku/scheduling-scaler/pkg/apis/apps/v1alpha1"
 	clientset "github.com/cstoku/scheduling-scaler/pkg/client/clientset/versioned"
-	scscscheme "github.com/cstoku/scheduling-scaler/pkg/client/clientset/versioned/scheme"
+	appsscheme "github.com/cstoku/scheduling-scaler/pkg/client/clientset/versioned/scheme"
 	informers "github.com/cstoku/scheduling-scaler/pkg/client/informers/externalversions/apps/v1alpha1"
 	listers "github.com/cstoku/scheduling-scaler/pkg/client/listers/apps/v1alpha1"
 	"github.com/golang/glog"
@@ -20,9 +20,9 @@ import (
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
-	appsinformers "k8s.io/client-go/informers/apps/v1"
 	"k8s.io/client-go/kubernetes/scheme"
 	typedcorev1 "k8s.io/client-go/kubernetes/typed/core/v1"
+	"k8s.io/client-go/scale"
 )
 
 const controllerAgentName = "scheduling-scaler-controller"
@@ -34,41 +34,44 @@ const (
 )
 
 type Controller struct {
-	kubeclientset kubernetes.Interface
-	scscClientset clientset.Interface
+	kubeClientset kubernetes.Interface
+	appsClientset clientset.Interface
 
-	scscLister listers.SchedulingScalerLister
-	scscSynced cache.InformerSynced
+	scaleNamespacer scale.ScalesGetter
+
+	appsLister listers.SchedulingScalerLister
+	appsSynced cache.InformerSynced
 
 	workqueue workqueue.RateLimitingInterface
 	recorder  record.EventRecorder
 }
 
 func NewController(
-	kubeclientset kubernetes.Interface,
-	scscClientset clientset.Interface,
-	deploymentInformer appsinformers.DeploymentInformer,
-	scscInformer informers.SchedulingScalerInformer) *Controller {
-
-	scscscheme.AddToScheme(scheme.Scheme)
+	kubeClientset kubernetes.Interface,
+	appsClientset clientset.Interface,
+	scaleNamespacer scale.ScalesGetter,
+	appsInformer informers.SchedulingScalerInformer) *Controller {
+	kubeClientset.AutoscalingV1().RESTClient()
+	appsscheme.AddToScheme(scheme.Scheme)
 	glog.Info("Creating event broadcaster")
 
 	eventBroadcaster := record.NewBroadcaster()
 	eventBroadcaster.StartLogging(glog.Infof)
-	eventBroadcaster.StartRecordingToSink(&typedcorev1.EventSinkImpl{Interface: kubeclientset.CoreV1().Events("")})
+	eventBroadcaster.StartRecordingToSink(&typedcorev1.EventSinkImpl{Interface: kubeClientset.CoreV1().Events("")})
 	recorder := eventBroadcaster.NewRecorder(scheme.Scheme, corev1.EventSource{Component: controllerAgentName})
 
 	controller := &Controller{
-		kubeclientset: kubeclientset,
-		scscClientset: scscClientset,
-		scscLister:    scscInformer.Lister(),
-		scscSynced:    scscInformer.Informer().HasSynced,
-		workqueue:     workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "scscs"),
-		recorder:      recorder,
+		kubeClientset:   kubeClientset,
+		appsClientset:   appsClientset,
+		scaleNamespacer: scaleNamespacer,
+		appsLister:      appsInformer.Lister(),
+		appsSynced:      appsInformer.Informer().HasSynced,
+		workqueue:       workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "appss"),
+		recorder:        recorder,
 	}
-
+	scaleNamespacer.Scales("")
 	glog.Info("Setting up event handlers")
-	scscInformer.Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{
+	appsInformer.Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc: controller.enqueueSchedulingScaler,
 		UpdateFunc: func(old, new interface{}) {
 			controller.enqueueSchedulingScaler(new)
@@ -84,7 +87,7 @@ func (c *Controller) Run(threadiness int, stopCh <-chan struct{}) error {
 	glog.Info("Starting Workflow controller")
 
 	glog.Info("Waiting for informer caches to sync")
-	if ok := cache.WaitForCacheSync(stopCh, c.scscSynced); !ok {
+	if ok := cache.WaitForCacheSync(stopCh, c.appsSynced); !ok {
 		return fmt.Errorf("failed to wait for caches to sync")
 	}
 
@@ -130,6 +133,7 @@ func (c *Controller) processNextWorkItem() bool {
 	}(obj)
 
 	if err != nil {
+		c.workqueue.AddRateLimited(obj)
 		runtime.HandleError(err)
 		return true
 	}
@@ -144,7 +148,7 @@ func (c *Controller) syncHandler(key string) error {
 		return nil
 	}
 
-	wf, err := c.scscLister.SchedulingScalers(namespace).Get(name)
+	wf, err := c.appsLister.SchedulingScalers(namespace).Get(name)
 	if err != nil {
 		if errors.IsNotFound(err) {
 			runtime.HandleError(fmt.Errorf("workflow '%s' in work queue no longer exists", key))
@@ -169,10 +173,10 @@ func (c *Controller) syncHandler(key string) error {
 	return nil
 }
 
-func (c *Controller) updateWorkflowStatus(wf *scscv1alpha1.SchedulingScaler) error {
+func (c *Controller) updateWorkflowStatus(wf *appsv1alpha1.SchedulingScaler) error {
 	wfCopy := wf.DeepCopy()
 	wfCopy.Status.Name = wf.Spec.Name
-	_, err := c.scscClientset.AppsV1alpha1().SchedulingScalers(wf.Namespace).Update(wfCopy)
+	_, err := c.appsClientset.AppsV1alpha1().SchedulingScalers(wf.Namespace).Update(wfCopy)
 	return err
 }
 
