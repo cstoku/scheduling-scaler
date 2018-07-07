@@ -21,3 +21,11 @@ type SchedulingScalerStatus struct {
 type SchedulingScalerSpec struct {
 	Name string `json:"name"`
 }
+
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+type SchedulingScalerList struct {
+	metav1.TypeMeta `json:",inline"`
+	metav1.ListMeta `json:"metadata"`
+
+	Items []SchedulingScaler `json:"items"`
+}
