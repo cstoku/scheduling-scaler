@@ -19,7 +19,7 @@ limitations under the License.
 package fake
 
 import (
-	v1alpha1 "github.com/cstoku/scheduling-scaler/pkg/apis/apps/v1alpha1"
+	v1alpha1 "github.com/cstoku/scheduling-scaler/pkg/apis/scaling/v1alpha1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	labels "k8s.io/apimachinery/pkg/labels"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
@@ -30,13 +30,13 @@ import (
 
 // FakeSchedulingScalers implements SchedulingScalerInterface
 type FakeSchedulingScalers struct {
-	Fake *FakeAppsV1alpha1
+	Fake *FakeScalingV1alpha1
 	ns   string
 }
 
-var schedulingscalersResource = schema.GroupVersionResource{Group: "apps.k8s.cstoku.me", Version: "v1alpha1", Resource: "schedulingscalers"}
+var schedulingscalersResource = schema.GroupVersionResource{Group: "scaling.k8s.cstoku.me", Version: "v1alpha1", Resource: "schedulingscalers"}
 
-var schedulingscalersKind = schema.GroupVersionKind{Group: "apps.k8s.cstoku.me", Version: "v1alpha1", Kind: "SchedulingScaler"}
+var schedulingscalersKind = schema.GroupVersionKind{Group: "scaling.k8s.cstoku.me", Version: "v1alpha1", Kind: "SchedulingScaler"}
 
 // Get takes name of the schedulingScaler, and returns the corresponding schedulingScaler object, and an error if there is any.
 func (c *FakeSchedulingScalers) Get(name string, options v1.GetOptions) (result *v1alpha1.SchedulingScaler, err error) {

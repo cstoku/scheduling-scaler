@@ -19,7 +19,7 @@ limitations under the License.
 package scheme
 
 import (
-	appsv1alpha1 "github.com/cstoku/scheduling-scaler/pkg/apis/apps/v1alpha1"
+	scalingv1alpha1 "github.com/cstoku/scheduling-scaler/pkg/apis/scaling/v1alpha1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
@@ -50,5 +50,5 @@ func init() {
 // After this, RawExtensions in Kubernetes types will serialize kube-aggregator types
 // correctly.
 func AddToScheme(scheme *runtime.Scheme) {
-	appsv1alpha1.AddToScheme(scheme)
+	scalingv1alpha1.AddToScheme(scheme)
 }

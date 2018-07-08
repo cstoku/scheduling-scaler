@@ -21,10 +21,10 @@ package v1alpha1
 import (
 	time "time"
 
-	appsv1alpha1 "github.com/cstoku/scheduling-scaler/pkg/apis/apps/v1alpha1"
+	scalingv1alpha1 "github.com/cstoku/scheduling-scaler/pkg/apis/scaling/v1alpha1"
 	versioned "github.com/cstoku/scheduling-scaler/pkg/client/clientset/versioned"
 	internalinterfaces "github.com/cstoku/scheduling-scaler/pkg/client/informers/externalversions/internalinterfaces"
-	v1alpha1 "github.com/cstoku/scheduling-scaler/pkg/client/listers/apps/v1alpha1"
+	v1alpha1 "github.com/cstoku/scheduling-scaler/pkg/client/listers/scaling/v1alpha1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	watch "k8s.io/apimachinery/pkg/watch"
@@ -61,16 +61,16 @@ func NewFilteredSchedulingScalerInformer(client versioned.Interface, namespace s
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AppsV1alpha1().SchedulingScalers(namespace).List(options)
+				return client.ScalingV1alpha1().SchedulingScalers(namespace).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.AppsV1alpha1().SchedulingScalers(namespace).Watch(options)
+				return client.ScalingV1alpha1().SchedulingScalers(namespace).Watch(options)
 			},
 		},
-		&appsv1alpha1.SchedulingScaler{},
+		&scalingv1alpha1.SchedulingScaler{},
 		resyncPeriod,
 		indexers,
 	)
@@ -81,7 +81,7 @@ func (f *schedulingScalerInformer) defaultInformer(client versioned.Interface, r
 }
 
 func (f *schedulingScalerInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&appsv1alpha1.SchedulingScaler{}, f.defaultInformer)
+	return f.factory.InformerFor(&scalingv1alpha1.SchedulingScaler{}, f.defaultInformer)
 }
 
 func (f *schedulingScalerInformer) Lister() v1alpha1.SchedulingScalerLister {

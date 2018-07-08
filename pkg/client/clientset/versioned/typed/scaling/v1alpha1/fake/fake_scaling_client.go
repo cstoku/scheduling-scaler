@@ -19,22 +19,22 @@ limitations under the License.
 package fake
 
 import (
-	v1alpha1 "github.com/cstoku/scheduling-scaler/pkg/client/clientset/versioned/typed/apps/v1alpha1"
+	v1alpha1 "github.com/cstoku/scheduling-scaler/pkg/client/clientset/versioned/typed/scaling/v1alpha1"
 	rest "k8s.io/client-go/rest"
 	testing "k8s.io/client-go/testing"
 )
 
-type FakeAppsV1alpha1 struct {
+type FakeScalingV1alpha1 struct {
 	*testing.Fake
 }
 
-func (c *FakeAppsV1alpha1) SchedulingScalers(namespace string) v1alpha1.SchedulingScalerInterface {
+func (c *FakeScalingV1alpha1) SchedulingScalers(namespace string) v1alpha1.SchedulingScalerInterface {
 	return &FakeSchedulingScalers{c, namespace}
 }
 
 // RESTClient returns a RESTClient that is used to communicate
 // with API server by this client implementation.
-func (c *FakeAppsV1alpha1) RESTClient() rest.Interface {
+func (c *FakeScalingV1alpha1) RESTClient() rest.Interface {
 	var ret *rest.RESTClient
 	return ret
 }

@@ -24,8 +24,8 @@ import (
 	time "time"
 
 	versioned "github.com/cstoku/scheduling-scaler/pkg/client/clientset/versioned"
-	apps "github.com/cstoku/scheduling-scaler/pkg/client/informers/externalversions/apps"
 	internalinterfaces "github.com/cstoku/scheduling-scaler/pkg/client/informers/externalversions/internalinterfaces"
+	scaling "github.com/cstoku/scheduling-scaler/pkg/client/informers/externalversions/scaling"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
@@ -172,9 +172,9 @@ type SharedInformerFactory interface {
 	ForResource(resource schema.GroupVersionResource) (GenericInformer, error)
 	WaitForCacheSync(stopCh <-chan struct{}) map[reflect.Type]bool
 
-	Apps() apps.Interface
+	Scaling() scaling.Interface
 }
 
-func (f *sharedInformerFactory) Apps() apps.Interface {
-	return apps.New(f, f.namespace, f.tweakListOptions)
+func (f *sharedInformerFactory) Scaling() scaling.Interface {
+	return scaling.New(f, f.namespace, f.tweakListOptions)
 }

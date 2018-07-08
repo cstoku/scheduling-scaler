@@ -19,28 +19,28 @@ limitations under the License.
 package v1alpha1
 
 import (
-	v1alpha1 "github.com/cstoku/scheduling-scaler/pkg/apis/apps/v1alpha1"
+	v1alpha1 "github.com/cstoku/scheduling-scaler/pkg/apis/scaling/v1alpha1"
 	"github.com/cstoku/scheduling-scaler/pkg/client/clientset/versioned/scheme"
 	serializer "k8s.io/apimachinery/pkg/runtime/serializer"
 	rest "k8s.io/client-go/rest"
 )
 
-type AppsV1alpha1Interface interface {
+type ScalingV1alpha1Interface interface {
 	RESTClient() rest.Interface
 	SchedulingScalersGetter
 }
 
-// AppsV1alpha1Client is used to interact with features provided by the apps.k8s.cstoku.me group.
-type AppsV1alpha1Client struct {
+// ScalingV1alpha1Client is used to interact with features provided by the scaling.k8s.cstoku.me group.
+type ScalingV1alpha1Client struct {
 	restClient rest.Interface
 }
 
-func (c *AppsV1alpha1Client) SchedulingScalers(namespace string) SchedulingScalerInterface {
+func (c *ScalingV1alpha1Client) SchedulingScalers(namespace string) SchedulingScalerInterface {
 	return newSchedulingScalers(c, namespace)
 }
 
-// NewForConfig creates a new AppsV1alpha1Client for the given config.
-func NewForConfig(c *rest.Config) (*AppsV1alpha1Client, error) {
+// NewForConfig creates a new ScalingV1alpha1Client for the given config.
+func NewForConfig(c *rest.Config) (*ScalingV1alpha1Client, error) {
 	config := *c
 	if err := setConfigDefaults(&config); err != nil {
 		return nil, err
@@ -49,12 +49,12 @@ func NewForConfig(c *rest.Config) (*AppsV1alpha1Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &AppsV1alpha1Client{client}, nil
+	return &ScalingV1alpha1Client{client}, nil
 }
 
-// NewForConfigOrDie creates a new AppsV1alpha1Client for the given config and
+// NewForConfigOrDie creates a new ScalingV1alpha1Client for the given config and
 // panics if there is an error in the config.
-func NewForConfigOrDie(c *rest.Config) *AppsV1alpha1Client {
+func NewForConfigOrDie(c *rest.Config) *ScalingV1alpha1Client {
 	client, err := NewForConfig(c)
 	if err != nil {
 		panic(err)
@@ -62,9 +62,9 @@ func NewForConfigOrDie(c *rest.Config) *AppsV1alpha1Client {
 	return client
 }
 
-// New creates a new AppsV1alpha1Client for the given RESTClient.
-func New(c rest.Interface) *AppsV1alpha1Client {
-	return &AppsV1alpha1Client{c}
+// New creates a new ScalingV1alpha1Client for the given RESTClient.
+func New(c rest.Interface) *ScalingV1alpha1Client {
+	return &ScalingV1alpha1Client{c}
 }
 
 func setConfigDefaults(config *rest.Config) error {
@@ -82,7 +82,7 @@ func setConfigDefaults(config *rest.Config) error {
 
 // RESTClient returns a RESTClient that is used to communicate
 // with API server by this client implementation.
-func (c *AppsV1alpha1Client) RESTClient() rest.Interface {
+func (c *ScalingV1alpha1Client) RESTClient() rest.Interface {
 	if c == nil {
 		return nil
 	}

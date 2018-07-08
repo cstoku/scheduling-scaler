@@ -27,7 +27,7 @@ CODEGEN_PKG=${CODEGEN_PKG:-$(cd ${SCRIPT_ROOT}; ls -d -1 ./vendor/k8s.io/code-ge
 #                  instead of the $GOPATH directly. For normal projects this can be dropped.
 ${CODEGEN_PKG}/generate-groups.sh "all" \
   github.com/cstoku/scheduling-scaler/pkg/client github.com/cstoku/scheduling-scaler/pkg/apis \
-  apps:v1alpha1
+  scaling:v1alpha1
 
 # To use your own boilerplate text use:
 #   --go-header-file ${SCRIPT_ROOT}/hack/custom-boilerplate.go.txt

@@ -9,7 +9,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 
-	"github.com/cstoku/scheduling-scaler/pkg/apis/apps"
+	"github.com/cstoku/scheduling-scaler/pkg/apis/scaling"
 	clientset "github.com/cstoku/scheduling-scaler/pkg/client/clientset/versioned"
 	informers "github.com/cstoku/scheduling-scaler/pkg/client/informers/externalversions"
 	"k8s.io/client-go/discovery"
@@ -40,9 +40,9 @@ func main() {
 		glog.Fatalf("Error building kubernetes clientset: %s", err.Error())
 	}
 
-	appsClient, err := clientset.NewForConfig(cfg)
+	scalingClient, err := clientset.NewForConfig(cfg)
 	if err != nil {
-		glog.Fatalf("Error building %s clientset: %s", apps.GroupName, err.Error())
+		glog.Fatalf("Error building %s clientset: %s", scaling.GroupName, err.Error())
 	}
 
 	discoveryClient, err := discovery.NewDiscoveryClientForConfig(cfg)
@@ -62,15 +62,15 @@ func main() {
 	}
 
 	kubeInformerFactory := kubeinformers.NewSharedInformerFactory(kubeClient, time.Second*30)
-	appsInformerFactory := informers.NewSharedInformerFactory(appsClient, time.Second*30)
+	appsInformerFactory := informers.NewSharedInformerFactory(scalingClient, time.Second*30)
 
-	controller := NewController(kubeClient, appsClient, scaleNamespacer,
-		appsInformerFactory.Apps().V1alpha1().SchedulingScalers())
+	controller := NewController(kubeClient, scalingClient, mapper, scaleNamespacer,
+		appsInformerFactory.Scaling().V1alpha1().SchedulingScalers())
 
 	go kubeInformerFactory.Start(stopCh)
 	go appsInformerFactory.Start(stopCh)
 
-	if err = controller.Run(2, stopCh); err != nil {
+	if err = controller.Run(stopCh); err != nil {
 		glog.Fatalf("Error running controller: %s", err.Error())
 	}
 }

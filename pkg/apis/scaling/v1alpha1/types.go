@@ -17,7 +17,9 @@ type SchedulingScaler struct {
 }
 
 type SchedulingScalerStatus struct {
-	ScheduledReplicas int32 `json:"scheduledReplicas"`
+	CurrentReplicas int32     `json:"currentReplicas"`
+	DesiredReplicas int32     `json:"desiredReplicas"`
+	LastScaleTime   metav1.Time `json:"lastScaleTime"`
 }
 
 type SchedulingScalerSpec struct {
@@ -45,7 +47,7 @@ type CrossVersionObjectReference struct {
 }
 
 type SchedulingTime struct {
-	time.Time
+	metav1.Time
 }
 
 func (st SchedulingTime) format() string {
@@ -61,6 +63,6 @@ func (st *SchedulingTime) UnmarshalJSON(data []byte) (err error) {
 	if err != nil {
 		return err
 	}
-	st = &SchedulingTime{t}
+	st = &SchedulingTime{metav1.Time{t}}
 	return
 }

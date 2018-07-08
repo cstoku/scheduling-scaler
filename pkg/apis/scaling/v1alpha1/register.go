@@ -1,13 +1,13 @@
 package v1alpha1
 
 import (
-	"github.com/cstoku/scheduling-scaler/pkg/apis/apps"
+	"github.com/cstoku/scheduling-scaler/pkg/apis/scaling"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
-var SchemeGroupVersion = schema.GroupVersion{Group: apps.GroupName, Version: "v1alpha1"}
+var SchemeGroupVersion = schema.GroupVersion{Group: scaling.GroupName, Version: "v1alpha1"}
 
 func Kind(kind string) schema.GroupKind {
 	return SchemeGroupVersion.WithKind(kind).GroupKind()
