@@ -295,6 +295,7 @@
   packages = [
     "discovery",
     "discovery/fake",
+    "dynamic",
     "informers",
     "informers/admissionregistration",
     "informers/admissionregistration/v1alpha1",
@@ -403,6 +404,15 @@
     "plugin/pkg/client/auth/exec",
     "rest",
     "rest/watch",
+    "restmapper",
+    "scale",
+    "scale/scheme",
+    "scale/scheme/appsint",
+    "scale/scheme/appsv1beta1",
+    "scale/scheme/appsv1beta2",
+    "scale/scheme/autoscalingv1",
+    "scale/scheme/extensionsint",
+    "scale/scheme/extensionsv1beta1",
     "testing",
     "tools/auth",
     "tools/cache",
@@ -421,8 +431,7 @@
     "util/flowcontrol",
     "util/homedir",
     "util/integer",
-    "util/retry",
-    "util/workqueue"
+    "util/retry"
   ]
   revision = "7ab20732fabbacddb8795c3b259fdf540d3de616"
 
@@ -463,6 +472,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "1c02a08bfc592cc02d10f18c1eac2adfd8a951deaf8c327057121072b9470a5b"
+  inputs-digest = "28087d97f49eb6c9c737dc68ba76020b6ba7693b50ec53a32272fa49daefc494"
   solver-name = "gps-cdcl"
   solver-version = 1
