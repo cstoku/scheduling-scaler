@@ -3,6 +3,7 @@ kind: SchedulingScaler
 metadata:
   name: example-scheduling-scaler
 spec:
+  location: "Asia/Tokyo"
   schedules:
   - scheduleTime: "12:00"
     replicas: 10
