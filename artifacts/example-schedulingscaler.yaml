@@ -1,6 +1,22 @@
-apiVersion: apps.k8s.cstoku.me/v1alpha1
+apiVersion: scaling.k8s.cstoku.me/v1alpha1
 kind: SchedulingScaler
 metadata:
   name: example-scheduling-scaler
 spec:
-  name: hoge
+  schedules:
+  - scheduleTime: "00:00"
+    replicas: 5
+  - scheduleTime: "09:05"
+    replicas: 10
+  - scheduleTime: "09:06"
+    replicas: 15
+  - scheduleTime: "09:08"
+    replicas: 2
+  - scheduleTime: "09:10"
+    replicas: 5
+  - scheduleTime: "09:15"
+    replicas: 15
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: nginx
