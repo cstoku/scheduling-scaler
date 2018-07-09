@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: scheduling-scaler
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: scheduling-scaler
+rules:
+- apiGroups: ["scaling.k8s.cstoku.me"]
+  resources: ["schedulingscalers"]
+  verbs: ["get", "watch", "list", "update"]
+- apiGroups: ["apps"]
+  resources: ["deployments/scale", "replicasets/scale", "statefulsets/scale"]
+  verbs: ["get", "update"]
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: scheduling-scaler
+subjects:
+- kind: ServiceAccount
+  name: scheduling-scaler
+  namespace: kube-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: scheduling-scaler
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scheduling-scaler
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      app: scheduling-scaler
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: scheduling-scaler
+    spec:
+      containers:
+        - name: scheduling-scaler
+          image: cstoku/scheduling-scaler:latest
+          imagePullPolicy: Always
+          env:
+            - name: TZ
+              value: Asia/Tokyo
+      serviceAccountName: scheduling-scaler
