@@ -59,10 +59,10 @@ func (st SchedulingTime) MarshalJSON() ([]byte, error) {
 }
 
 func (st *SchedulingTime) UnmarshalJSON(data []byte) (err error) {
-	t, err := time.Parse("15:04", string(data))
+	t, err := time.Parse(`"15:04"`, string(data))
 	if err != nil {
 		return err
 	}
-	st = &SchedulingTime{metav1.Time{t}}
+	*st = SchedulingTime{metav1.Time{t}}
 	return
 }
