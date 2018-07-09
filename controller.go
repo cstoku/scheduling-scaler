@@ -244,7 +244,7 @@ func (c *Controller) updateStatusIfNeeded(oldStatus *scalingv1alpha1.SchedulingS
 }
 
 func (c *Controller) updateStatus(scaler *scalingv1alpha1.SchedulingScaler) error {
-	_, err := c.scalingClientset.ScalingV1alpha1().SchedulingScalers(scaler.Namespace).UpdateStatus(scaler)
+	_, err := c.scalingClientset.ScalingV1alpha1().SchedulingScalers(scaler.Namespace).Update(scaler)
 	if err != nil {
 		c.recorder.Event(scaler, corev1.EventTypeWarning, "FailedUpdateStatus", err.Error())
 		return fmt.Errorf("failed to update status for %s: %v", scaler.Name, err)
