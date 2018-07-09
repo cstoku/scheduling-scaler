@@ -4,18 +4,12 @@ metadata:
   name: example-scheduling-scaler
 spec:
   schedules:
-  - scheduleTime: "00:00"
-    replicas: 5
-  - scheduleTime: "09:05"
+  - scheduleTime: "12:00"
     replicas: 10
-  - scheduleTime: "09:06"
+  - scheduleTime: "18:00"
     replicas: 15
-  - scheduleTime: "09:08"
-    replicas: 2
-  - scheduleTime: "09:10"
+  - scheduleTime: "23:00"
     replicas: 5
-  - scheduleTime: "09:15"
-    replicas: 15
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
