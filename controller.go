@@ -159,14 +159,16 @@ func (c *Controller) syncOne(scaler *scalingv1alpha1.SchedulingScaler, now metav
 	} else {
 		scalerSchedules := scaler.Spec.Schedules
 		sortSchedules(scalerSchedules)
-		var targetSchedule scalingv1alpha1.SchedulingScalerSchedule
+		targetSchedule := scalerSchedules[len(scalerSchedules)-1]
 		for _, s := range scalerSchedules {
 			nowTime := convertTime(s.ScheduleTime, now)
-			targetSchedule = s
+			glog.V(4).Infof("Check Schedule Time: %v <-> %v(%v)", s.ScheduleTime, nowTime, nowTime.Local())
 			if s.ScheduleTime.Equal(&nowTime) || s.ScheduleTime.After(nowTime.Local()) {
 				break
 			}
+			targetSchedule = s
 		}
+		glog.V(4).Infof("Target Schedule: %v -> %v", targetSchedule.ScheduleTime, targetSchedule.Replicas)
 		rescaleReason = "Scheduling time has changed"
 		desiredReplicas = targetSchedule.Replicas
 		rescale = desiredReplicas != currentReplicas
