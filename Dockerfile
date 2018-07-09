@@ -8,5 +8,6 @@ RUN dep ensure
 RUN go build -o /tmp/scheduling-scaler
 
 FROM alpine
+RUN apk add --no-cache tzdata
 COPY --from=build-env /tmp/scheduling-scaler /usr/local/bin
 ENTRYPOINT ["/usr/local/bin/scheduling-scaler"]
