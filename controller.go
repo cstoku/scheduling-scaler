@@ -108,7 +108,14 @@ func (c *Controller) syncAll() {
 	glog.V(4).Infof("Found %d SchedulingScalers", len(scalers))
 
 	for _, scaler := range scalers {
-		err := c.syncOne(&scaler, metav1.Now())
+		loc, err := time.LoadLocation(scaler.Spec.Location)
+		if err != nil {
+			glog.Warning("Failed load Location. Use UTC.")
+			loc = time.UTC
+		}
+
+		now := metav1.Time{time.Now().In(loc)}
+		err = c.syncOne(&scaler, now)
 		if err != nil {
 			glog.Warning(fmt.Errorf("SyncOne Error: %v", err))
 		}

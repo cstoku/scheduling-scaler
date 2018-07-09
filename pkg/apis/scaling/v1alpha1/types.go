@@ -25,6 +25,7 @@ type SchedulingScalerStatus struct {
 type SchedulingScalerSpec struct {
 	Schedules      []SchedulingScalerSchedule  `json:"schedules"`
 	ScaleTargetRef CrossVersionObjectReference `json:"scaleTargetRef"`
+	Location       string                      `json:"location"`
 }
 
 type SchedulingScalerSchedule struct {
