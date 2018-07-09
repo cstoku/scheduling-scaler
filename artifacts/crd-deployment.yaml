@@ -17,6 +17,4 @@ spec:
         - name: scheduling-scaler
           image: cstoku/scheduling-scaler:latest
           imagePullPolicy: Always
-          env:
-            - name: TZ
-              value: Asia/Tokyo
+
